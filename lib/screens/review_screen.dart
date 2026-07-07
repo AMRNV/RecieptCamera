@@ -5,8 +5,16 @@ import '../services/sheets_service.dart';
 class ReviewScreen extends StatefulWidget {
   final ReceiptParseResult result;
   final SheetsService sheetsService;
+  final String spreadsheetId;
+  final String sheetName;
 
-  const ReviewScreen({super.key, required this.result, required this.sheetsService});
+  const ReviewScreen({
+    super.key,
+    required this.result,
+    required this.sheetsService,
+    required this.spreadsheetId,
+    required this.sheetName,
+  });
 
   @override
   State<ReviewScreen> createState() => _ReviewScreenState();
@@ -41,6 +49,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
     setState(() => _saving = true);
     try {
       await widget.sheetsService.appendReceipt(
+        spreadsheetId: widget.spreadsheetId,
+        sheetName: widget.sheetName,
         merchant: _merchant.text.trim(),
         date: _date.text.trim(),
         total: _total.text.trim(),

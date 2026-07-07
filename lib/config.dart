@@ -1,15 +1,9 @@
 /// ============================================================
-/// CONFIGURE YOUR DESTINATION HERE. This is the only file
-/// you should need to edit to point the app at your own sheet.
+/// App-wide constants. The destination spreadsheet ID and tab name
+/// are configured from within the app (see SettingsScreen /
+/// SettingsStore) rather than hardcoded here.
 /// ============================================================
 class AppConfig {
-  /// The ID from your Google Sheet's URL:
-  /// https://docs.google.com/spreadsheets/d/THIS_PART/edit
-  static const String spreadsheetId = 'YOUR_SPREADSHEET_ID_HERE';
-
-  /// The tab name inside the spreadsheet to append rows to.
-  static const String sheetName = 'Sheet1';
-
   /// Path to the service account JSON key, bundled as an asset.
   /// See README.md for how to create this.
   static const String serviceAccountAssetPath = 'assets/service_account.json';

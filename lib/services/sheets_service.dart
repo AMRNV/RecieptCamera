@@ -32,17 +32,20 @@ class SheetsService {
 
   /// Ensures the header row exists. Safe to call every time the app starts;
   /// it only writes headers if row 1 looks empty.
-  Future<void> ensureHeaderRow() async {
+  Future<void> ensureHeaderRow({
+    required String spreadsheetId,
+    required String sheetName,
+  }) async {
     await _ensureAuthed();
-    final range = '${AppConfig.sheetName}!A1:${_colLetter(AppConfig.columnHeaders.length)}1';
+    final range = '$sheetName!A1:${_colLetter(AppConfig.columnHeaders.length)}1';
 
-    final existing = await _api!.spreadsheets.values.get(AppConfig.spreadsheetId, range);
+    final existing = await _api!.spreadsheets.values.get(spreadsheetId, range);
     final isEmpty = existing.values == null || existing.values!.isEmpty;
 
     if (isEmpty) {
       await _api!.spreadsheets.values.update(
         sheets.ValueRange(values: [AppConfig.columnHeaders]),
-        AppConfig.spreadsheetId,
+        spreadsheetId,
         range,
         valueInputOption: 'USER_ENTERED',
       );
@@ -57,6 +60,8 @@ class SheetsService {
 
   /// Appends one row built from a parsed + user-confirmed receipt.
   Future<void> appendReceipt({
+    required String spreadsheetId,
+    required String sheetName,
     required String merchant,
     required String? date,
     required String? total,
@@ -75,14 +80,23 @@ class SheetsService {
       category,
     ];
 
-    final range = '${AppConfig.sheetName}!A:${_colLetter(AppConfig.columnHeaders.length)}';
+    final range = '$sheetName!A:${_colLetter(AppConfig.columnHeaders.length)}';
 
     await _api!.spreadsheets.values.append(
       sheets.ValueRange(values: [row]),
-      AppConfig.spreadsheetId,
+      spreadsheetId,
       range,
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
     );
+  }
+
+  /// Reads the service account's client_email out of the bundled asset, so
+  /// the Settings screen can show the user exactly what to share their
+  /// sheet with — without them having to open the JSON file themselves.
+  Future<String?> readServiceAccountEmail() async {
+    final jsonStr = await rootBundle.loadString(AppConfig.serviceAccountAssetPath);
+    final decoded = jsonDecode(jsonStr) as Map<String, dynamic>;
+    return decoded['client_email'] as String?;
   }
 }

@@ -62,23 +62,27 @@ Also make sure `minSdkVersion` is at least 21 in `android/app/build.gradle`.
    **Editor** access. This step is required — without it, writes will fail
    with a permissions error.
 
-### 4. Point the app at your sheet
-
-Edit `lib/config.dart`:
-
-```dart
-static const String spreadsheetId = 'YOUR_SPREADSHEET_ID_HERE';
-static const String sheetName = 'Sheet1';
-```
-
-The spreadsheet ID is the long string in your sheet's URL:
-`https://docs.google.com/spreadsheets/d/`**`THIS_PART`**`/edit`
-
-### 5. Run it
+### 4. Run it
 
 ```bash
 flutter run
 ```
+
+### 5. Point the app at your sheet (in-app)
+
+The destination spreadsheet isn't hardcoded — configure it from inside the
+app. Tap the gear icon on the home screen (or just tap **Scan Receipt** the
+first time; you'll be sent to Settings automatically) and:
+
+1. Paste your Google Sheet's URL (or just the ID) into **Spreadsheet URL or ID**.
+2. Set the **Tab name** (defaults to `Sheet1`).
+3. Tap **Test Connection** to confirm the app can reach the sheet — this
+   also shows you the service account's email so you can share the sheet
+   with it (Editor access) if you haven't already.
+4. Tap **Save Destination**.
+
+This is stored on-device (Hive), so you only need to do it once per install.
+You can revisit Settings any time to point the app at a different sheet.
 
 ## How the first scan of a new store works
 
@@ -115,7 +119,7 @@ adding a notes field).
 
 ```
 lib/
-  config.dart               <- edit spreadsheet ID here
+  config.dart               <- schema/asset constants (column headers, key path)
   main.dart
   models/
     receipt_template.dart   <- FieldRule / StoreTemplate data model
@@ -124,10 +128,12 @@ lib/
     receipt_matcher.dart     <- anchor-based field extraction
     teaching_helper.dart     <- turns a tapped line into a FieldRule
     template_store.dart      <- Hive-backed per-store template storage
+    settings_store.dart      <- Hive-backed destination (spreadsheet/tab) storage
     sheets_service.dart      <- Google Sheets write
   screens/
     home_screen.dart
     capture_screen.dart
     teach_screen.dart
     review_screen.dart
+    settings_screen.dart     <- configure destination spreadsheet in-app
 ```
